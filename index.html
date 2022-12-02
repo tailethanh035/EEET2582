@@ -12,6 +12,9 @@
             height: 500px;
             width: 500px
         }
+        .slideshow{
+            display: none;
+        }
     </style>
 </head>
 
@@ -29,7 +32,7 @@
 
     <div class="w3-content" style="max-width:100%" id="page" >
         <div class="w3-center w3-card">
-            <img class="w3-image w3-card" src="background.jpg" style="width:100%; height: 60vw">
+            <img class="w3-image w3-card" style="width:100%; height: 60vw" id="background">
             <div class="w3-display-topmiddle w3-padding-large" style="margin-top: 100px">
                 <h1 class="w3-text-white w3-center">
                     Cam Ranh, Nha trang, Vietnam
@@ -62,6 +65,23 @@
 
             <table class="w3-table-all w3-centered" id="booking">
             </table>
+
+            <div id="guest_info" style="display:none">
+                <h1><b>Booking Information</b> </h1>
+                <p>
+                    <label>Name</label>
+                    <input type="text" required id="guest_name" class="w3-input" />
+                </p>
+                <p>
+                    <label>Phone Number</label>
+                    <input type="tel" required id="guest_phone" class="w3-input"/>
+                </p>
+                <p>
+                    <label>Email</label>
+                    <input type="email" required id="guest_email" class="w3-input" />
+                </p>
+                <p id="fillMsg" style="display: none" class="w3-text-red">Please fill in the information </p>
+            </div>
         </div>
 
 
@@ -82,8 +102,16 @@
                 <h1>  Rooms</h1>
             </table>
         </div>
+        <div class="w3-container w3-left" style="display: inline-block">
+            <img id="current_image" style="width: 100%; height: 650px;min-width: 50% ;display: inline-block; margin-right: 5vw" class="w3-image m1 - m12">
+        </div>
+        <div class="w3-row" id="gallery">
+        </div>
 
-        <div id="utilities" class="w3-xlarge w3-row w3-content w3-card" style="padding: 100px; margin-bottom:100px  ">
+
+
+
+        <div id="utilities" class="w3-xlarge w3-row w3-card" style="padding: 100px; margin-bottom:100px  ">
             <h1 class="w3-center w3-xxxlarge"> Utilities</h1>
 
             <div class="w3-col s4"> AC <i class="fa fa-x w3-text-red" id="ac"></i> </div>
@@ -238,60 +266,13 @@
     var array = new Array();
     var rooms = new Array();
     var standardRate = new Object();
+    var curPrice = new Object();
+    var bookingList = new Object();
     var longtitude = 0.0;
     var latitude = 0.0;
     var buf = new Object();
+    var images = new Array();
 
-    function editClick() {
-        document.getElementById("edit").style.display = "inline";
-    }
-
-    function setDateClicked() {
-        var beginDate = new Date(document.getElementById("startDate").value);
-        var endDate = new Date(document.getElementById("endDate").value);
-        if (beginDate.getTime() > endDate.getTime() || isNaN(endDate.getTime())) {
-            document.getElementById("endDate").value = document.getElementById("startDate").value;
-        }   
-     
-    }
-
-    function setDateClicked2() {
-        var inDate = new Date(document.getElementById("checkInDate").value);
-        var outDate = new Date(document.getElementById("checkOutDate").value);
-        if (inDate.getTime() > outDate.getTime() || isNaN(outDate.getTime())) {
-            document.getElementById("checkOutDate").value = document.getElementById("checkInDate").value;
-        }
-    }
-    function SetPrice() {
-        if (array.length == 0) {
-            document.getElementById("chooseMsg").style.visibility = "visible";
-        } else {
-            var beginDate = new Date(document.getElementById("startDate").value);
-            var endDate = new Date(document.getElementById("endDate").value);
-            var setPrice = document.getElementById("setprice").value;
-
-            for (loopTime = beginDate.getTime(); loopTime < endDate.getTime(); loopTime += 86400000) {
-                var loopDay = new Date(loopTime)
-                for (let i = 0; i < array.length; i++) {
-                    var str = array[i] + "-" + loopDay.toISOString().substring(0, 10);
-                    buf[array[i] + "+" + loopDay.toISOString().substring(0, 10)] = setPrice;
-                }
-            }
-
-            fetch("https://api.npoint.io/af328b8bf4041e0a9c1b", {
-                method: "post",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(buf)
-            })
-                .then((response) => {
-                    console.log(response);
-                });
-            location.reload();
-        }
-    }
 
     const URL = "https://api.npoint.io/5217ca47006bb5e8599d"
     const getData = async (url) => {
@@ -310,7 +291,6 @@
         document.getElementById("checkout").innerHTML = data.checkout;
         document.getElementById("latitude").value = data.latitude;
         document.getElementById("longtitude").value = data.longtitude;
-        
         document.getElementById("name").innerHTML += data.name;
         document.getElementById("address").innerHTML += data.address;
         document.getElementById("owner").innerHTML += data.owner;
@@ -389,6 +369,7 @@
     }
 
     setTimeout(() => {
+        console.log(latitude);
         const destination = { lat: parseFloat(latitude), lng: parseFloat(longtitude) };
         const map = new google.maps.Map(document.getElementById("map"), {
             zoom: 15,
@@ -402,8 +383,37 @@
 
         fetch('https://api.npoint.io/af328b8bf4041e0a9c1b')
             .then(response => response.json())
-            .then(json => {buf = json })
+            .then(json => { buf = json })
+
+        fetch('https://api.npoint.io/82f5b3769a414a376b6c')
+            .then(response => response.json())
+            .then(json => { bookingList = json })
+
+        fetch('https://api.npoint.io/2c7339884719aa26f8ea')
+            .then(response => response.json())
+            .then(json => {
+                for (let i = 0; i < json.gallery.length; i++) {
+                    var img = document.createElement("img");
+                    img.style.width = "100px";
+                    img.style.height = "100px";
+                    img.style.margin = "10px";
+                    img.style.display = "inline-block";
+                    img.classList.add("w3-card", "w3-grayscale-min", "w3-hover-opacity");
+                    img.src = json.gallery[i];
+                    img.onclick = function (event) {
+                        document.getElementById("current_image").src = event.target.src;
+
+                    }
+                    document.getElementById("gallery").appendChild(img);
+                }
+                document.getElementById("current_image").src = json.gallery[0];
+                document.getElementById("background").src = json.background;
+
+            })
+
     }, 1000);
+  
+
 
     function initMap() {
         
@@ -568,6 +578,11 @@
         document.getElementById("roomList").appendChild(newDiv);
     }
     function getPrice() {
+        if (document.getElementById("booking").childElementCount > 0) {
+            document.getElementById("booking").removeChild(document.getElementById("booking").lastChild);
+            document.getElementById("booking").removeChild(document.getElementById("booking").lastChild);
+        }
+
         var inDate = new Date(document.getElementById("checkInDate").value);
         var outDate = new Date(document.getElementById("checkOutDate").value);
         var arr = new Array();
@@ -595,14 +610,100 @@
             var newDiv = document.createElement("tr");
             var title = document.createElement("th");
             var price = document.createElement("th");
+            var bookBtn = document.createElement("button");
+            bookBtn.innerHTML = "Book";
+            bookBtn.classList.add("w3-button", "w3-green");
+            bookBtn.id = rooms[i];
+            bookBtn.onclick = function (event) {
+                var name = document.getElementById("guest_name").value;
+                var phone = document.getElementById("guest_phone").value;
+                var email = document.getElementById("guest_email").value;
+                var checkIn = document.getElementById("checkInDate").value;
+                var checkOut = document.getElementById("checkOutDate").value;
+
+                if (name === "" || phone === "" || email === "") {
+                    document.getElementById("fillMsg").style.display = "inline";
+                } else {
+                    var guestData = { "name": name, "phone": phone, "email": email, "price": curPrice[event.target.id], "room": event.target.id, "check-in": checkIn, "check-out": checkOut };
+                    bookingList.booking.push(guestData);
+                    fetch("https://api.npoint.io/82f5b3769a414a376b6c", {
+                        method: "post",
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(bookingList)
+                    })
+                        .then((response) => {
+                            console.log(response);
+                        });
+
+                    window.location.href = window.location.href;
+                    location.reload();
+
+                }
+            }
+
+
             title.innerHTML = rooms[i];
             price.innerHTML = obj[rooms[i]] + " USD";
             newDiv.appendChild(title);
             newDiv.appendChild(price);
-
+            newDiv.appendChild(bookBtn);
             document.getElementById("booking").appendChild(newDiv);
+        }
+        document.getElementById("guest_info").style.display = "inline";
+        curPrice = obj;
+    }
 
-       
+    function editClick() {
+        document.getElementById("edit").style.display = "inline";
+    }
+
+    function setDateClicked() {
+        var beginDate = new Date(document.getElementById("startDate").value);
+        var endDate = new Date(document.getElementById("endDate").value);
+        if (beginDate.getTime() > endDate.getTime() || isNaN(endDate.getTime())) {
+            document.getElementById("endDate").value = document.getElementById("startDate").value;
+        }
+
+    }
+
+    function setDateClicked2() {
+        var inDate = new Date(document.getElementById("checkInDate").value);
+        var outDate = new Date(document.getElementById("checkOutDate").value);
+        if (inDate.getTime() > outDate.getTime() || isNaN(outDate.getTime())) {
+            document.getElementById("checkOutDate").value = document.getElementById("checkInDate").value;
+        }
+    }
+    function SetPrice() {
+        if (array.length == 0) {
+            document.getElementById("chooseMsg").style.visibility = "visible";
+        } else {
+            var beginDate = new Date(document.getElementById("startDate").value);
+            var endDate = new Date(document.getElementById("endDate").value);
+            var setPrice = document.getElementById("setprice").value;
+
+            for (loopTime = beginDate.getTime(); loopTime < endDate.getTime(); loopTime += 86400000) {
+                var loopDay = new Date(loopTime)
+                for (let i = 0; i < array.length; i++) {
+                    var str = array[i] + "-" + loopDay.toISOString().substring(0, 10);
+                    buf[array[i] + "+" + loopDay.toISOString().substring(0, 10)] = setPrice;
+                }
+            }
+
+            fetch("https://api.npoint.io/af328b8bf4041e0a9c1b", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(buf)
+            })
+                .then((response) => {
+                    console.log(response);
+                });
+            window.location.href = window.location.href;
         }
     }
 
