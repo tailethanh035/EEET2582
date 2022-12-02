@@ -1,0 +1,614 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">\
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://kit.fontawesome.com/b4ceb01180.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <style>
+        #map {
+            height: 500px;
+            width: 500px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="w3-top" id="home">
+        <div class="w3-bar w3-white w3-padding-large w3-xlarge w3-card" style="letter-spacing:4px;">
+            <a href="#page" class="w3-bar-item w3-button">Home</a>
+
+            <div class="w3-right">
+                <a href="#map" class="w3-bar-item w3-button">Map</a>
+                <a href="#edit" class="w3-bar-item w3-button" onclick="editClick()">Admin Control Panel</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="w3-content" style="max-width:100%" id="page" >
+        <div class="w3-center w3-card">
+            <img class="w3-image w3-card" src="background.jpg" style="width:100%; height: 60vw">
+            <div class="w3-display-topmiddle w3-padding-large" style="margin-top: 100px">
+                <h1 class="w3-text-white w3-center">
+                    Cam Ranh, Nha trang, Vietnam
+                </h1>
+                <h1 class="w3-jumbo w3-text-white w3-large w3-center w3-wide">
+                    <b>
+                        The Princess of Arena Cam Ranh Home
+                    </b>
+                </h1>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="w3-large w3 w3-container w3-row w3-padding-64 w3-content" style="margin-top: 20px; max-width: 1200px">
+        <div class="w3-card w3-padding-64 w3-container" style="margin-bottom: 100px">
+            <div>
+                <table class="w3-table w3-striped w3-centered" id="getPriceRoom">
+                    <h1> Booking</h1>
+                </table>
+            </div>
+            <form>
+                <label>Check-in date</label>
+                <input type="date" id="checkInDate" onchange="setDateClicked2()" required>
+                <label>Check-out date</label>
+                <input type="date" id="checkOutDate" onchange="setDateClicked2()" required>
+
+                <button type="button" class="w3-button w3-green" onclick="getPrice()">Get Price</button>
+            </form>
+
+            <table class="w3-table-all w3-centered" id="booking">
+            </table>
+        </div>
+
+
+        <div>
+            <div class="w3-col s6">
+                <h1 class="w3-center"> About the property</h1>
+                <h3 id="name"> <b> Property name: </b> </h3>
+                <h3 id="address"> <b> Address: </b></h3>
+                <h3 id="owner"> <b> Owner name: </b> </h3>
+                <h3 id="phone"> <b> Phone: </b></h3>
+                <h3 id="email"> <b> Email: </b></h3>
+            </div>
+            <div id="map" class="w3-col s6 w3-center w3-card"></div>
+        </div>
+
+        <div class="w3-padding-64" style="margin-top: 200px">
+            <table class="w3-table-all w3-centered" id="rooms">
+                <h1>  Rooms</h1>
+            </table>
+        </div>
+
+        <div id="utilities" class="w3-xlarge w3-row w3-content w3-card" style="padding: 100px; margin-bottom:100px  ">
+            <h1 class="w3-center w3-xxxlarge"> Utilities</h1>
+
+            <div class="w3-col s4"> AC <i class="fa fa-x w3-text-red" id="ac"></i> </div>
+            <div class="w3-col s4"> Terrace <i class="fa fa-x w3-text-red" id="terrace"></i> </div>
+            <div class="w3-col s4"> Pool <i class="fa fa-x w3-text-red" id="pool"></i> </div>
+            <div class="w3-col s4"> Gym <i class="fa fa-x w3-text-red" id="gym"></i> </div>
+            <div class="w3-col s4"> Restaurant <i class="fa fa-x w3-text-red" id="restaurant"></i> </div>
+            <div class="w3-col s4"> Beach <i class="fa fa-x w3-text-red" id="beach"></i> </div>
+
+        </div>
+
+        <div class="w3-card w3-padding-64" style="margin-bottom: 50px">
+            <table class="w3-table w3-striped w3-centered">
+                <h1 class="w3-center w3-text-red w3-xxxlarge"> Rules</h1>
+                <tr>
+                    <th>Check in:</th>
+                    <th id="checkin">
+                    </th>
+                </tr>
+                <tr>
+                    <th>Check out:</th>
+                    <th id="checkout"></th>
+                </tr>
+                <tr>
+                    <th>Pets:</th>
+                    <th>
+                        <i class="w3-text-red fa fa-x" id="pets"> Not allowed</i>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Smoking:</th>
+                    <th>
+                        <i class="w3-text-red fa fa-x" id="smoking"> Not allowed</i>
+                    </th>
+                </tr>
+                <tr>
+                    <th>Parties</th>
+                    <th>
+                        <i class="w3-text-red fa fa-x" id="parties"> Not allowed</i>
+                    </th>
+                </tr>
+            </table>
+        </div>
+
+        <div id="edit" style="display: none">
+            <form class="w3-container w3-card w3-padding" onsubmit="submitForm()">
+                <h1>Update information</h1>
+                <input type="hidden" id="longtitude">
+                <input type="hidden" id="latitude">
+                <p>
+                    <label><b>Name</b> </label>
+                    <input class="w3-input" type="text" id="nameInput" required>
+                </p>
+                <p>
+                    <label><b>Address</b> </label>
+                    <input class="w3-input" type="text" id="addressInput" required>
+                </p>
+                <p>
+                    <label><b>Owner name</b> </label>
+                    <input class="w3-input" type="text" id="ownerInput" required>
+                </p>
+                <p>
+                    <label><b>Phone</b></label>
+                    <input class="w3-input" type="number" id="phoneInput" required>
+                </p>
+                <p>
+                    <label><b>Email</b></label>
+                    <input class="w3-input" type="email" id="emailInput" required>
+                </p>
+                <p><b>Utilities</b> </p>
+                <input type="checkbox" id="acInput" />
+                <label> AC   </label>
+                <input type="checkbox" id="terraceInput" />
+                <label> Terrace  </label>
+                <input type="checkbox" id="poolInput" />
+                <label> Pool  </label>
+                <input type="checkbox" id="gymInput" />
+                <label> Gym    </label>
+                <input type="checkbox" id="restaurantInput" />
+                <label> Restaurant  </label>
+                <input type="checkbox" id="beachInput" />
+                <label> Beach  </label>
+
+
+                <p>
+                    <label><b>Check-in Time</b></label>
+                    <input class="w3-input" type="text" id="checkinInput" required>
+                </p>
+                <p>
+                    <label><b>Check-out Time</b></label>
+                    <input class="w3-input" type="text" id="checkoutInput" required>
+                </p>
+
+                <h2> <b>Rooms</b></h2>
+                <table class="w3-table w3-striped w3-centered" id="roomList">
+                    <tr>
+                        <p class="w3-col s4 ">Title</p>
+
+                        <p class="w3-col s4 ">Size</p>
+
+                        <label class="w3-col s4 ">Rate</label>
+
+                    </tr>
+
+                </table>
+                <p></p>
+                <button class="w3-button w3-green" type="button" onclick="addRoom()"> Add Room <i class="fa fa-plus"></i></button>
+                <p></p>
+
+                <h2><b>Rules</b></h2>
+                <input type="checkbox" name="smoking" id="smokingInput">
+                <label for="utilities[AC]"> Smoking</label><br>
+                <input type="checkbox" name="pets" id="petInput">
+                <label for="utilities[AC]"> Pets</label><br>
+                <input type="checkbox" name="parties" id="partyInput">
+                <label for="utilities[AC]"> Parties</label><br>
+                <p>
+                </p>
+                <button class="w3-button w3-green" type="submit">Submit</button>
+
+
+
+            </form>
+
+            <div class="w3-padding w3-card">
+                <div>
+                    <table class="w3-table w3-striped w3-centered" id="setPrice">
+                        <h1> Set Price</h1>
+                    </table>
+                </div>
+                <form>
+                    <label>Start date</label>
+                    <input type="date" id="startDate" onchange="setDateClicked()" required>
+                    <label>End date</label>
+                    <input type="date" id="endDate" onchange="setDateClicked()" required>
+                    <p>
+                        <label>Price:</label>
+                        <input type="number" id="setprice" required />
+                    </p>
+                    <p class="w3-text-red" style="visibility:hidden" id="chooseMsg"> Please choose at least one room</p>
+                    <button type="submit" class="w3-button w3-green" onclick="SetPrice()">Submit</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+<script>
+    var array = new Array();
+    var rooms = new Array();
+    var standardRate = new Object();
+    var longtitude = 0.0;
+    var latitude = 0.0;
+    var buf = new Object();
+
+    function editClick() {
+        document.getElementById("edit").style.display = "inline";
+    }
+
+    function setDateClicked() {
+        var beginDate = new Date(document.getElementById("startDate").value);
+        var endDate = new Date(document.getElementById("endDate").value);
+        if (beginDate.getTime() > endDate.getTime() || isNaN(endDate.getTime())) {
+            document.getElementById("endDate").value = document.getElementById("startDate").value;
+        }   
+     
+    }
+
+    function setDateClicked2() {
+        var inDate = new Date(document.getElementById("checkInDate").value);
+        var outDate = new Date(document.getElementById("checkOutDate").value);
+        if (inDate.getTime() > outDate.getTime() || isNaN(outDate.getTime())) {
+            document.getElementById("checkOutDate").value = document.getElementById("checkInDate").value;
+        }
+    }
+    function SetPrice() {
+        if (array.length == 0) {
+            document.getElementById("chooseMsg").style.visibility = "visible";
+        } else {
+            var beginDate = new Date(document.getElementById("startDate").value);
+            var endDate = new Date(document.getElementById("endDate").value);
+            var setPrice = document.getElementById("setprice").value;
+
+            for (loopTime = beginDate.getTime(); loopTime < endDate.getTime(); loopTime += 86400000) {
+                var loopDay = new Date(loopTime)
+                for (let i = 0; i < array.length; i++) {
+                    var str = array[i] + "-" + loopDay.toISOString().substring(0, 10);
+                    buf[array[i] + "+" + loopDay.toISOString().substring(0, 10)] = setPrice;
+                }
+            }
+
+            fetch("https://api.npoint.io/af328b8bf4041e0a9c1b", {
+                method: "post",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(buf)
+            })
+                .then((response) => {
+                    console.log(response);
+                });
+            location.reload();
+        }
+    }
+
+    const URL = "https://api.npoint.io/5217ca47006bb5e8599d"
+    const getData = async (url) => {
+            let res = await fetch(url);
+        let data = await res.json();
+        for (let i = 0; i < data.rooms.length; i++) {
+            rooms.push(data.rooms[i].title);
+            standardRate[data.rooms[i].title] = data.rooms[i].rate;
+        }
+        longtitude = Number(data.longtitude);
+        latitude = data.latitude;
+
+                document.getElementById("checkin").innerHTML = data.checkin;
+
+        document.getElementById("checkin").innerHTML = data.checkin;
+        document.getElementById("checkout").innerHTML = data.checkout;
+        document.getElementById("latitude").value = data.latitude;
+        document.getElementById("longtitude").value = data.longtitude;
+        
+        document.getElementById("name").innerHTML += data.name;
+        document.getElementById("address").innerHTML += data.address;
+        document.getElementById("owner").innerHTML += data.owner;
+        document.getElementById("phone").innerHTML += data.phone;
+        document.getElementById("email").innerHTML += data.email;
+
+        document.getElementById("checkinInput").value = data.checkin;
+        document.getElementById("checkoutInput").value = data.checkout;
+        document.getElementById("nameInput").value = data.name;
+        document.getElementById("addressInput").value = data.address;
+        document.getElementById("ownerInput").value = data.owner;
+        document.getElementById("phoneInput").value = data.phone;
+        document.getElementById("emailInput").value = data.email;
+        if (data.pets === true) {
+            document.getElementById("petInput").checked = true;
+            document.getElementById("pets").classList.replace('fa-x','fa-check');
+            document.getElementById("pets").classList.replace('w3-text-red', 'w3-text-green');
+            document.getElementById("pets").innerHTML = "Allowed";
+        }
+        if (data.smoking === true) {
+            document.getElementById("smokingInput").checked = true;
+            document.getElementById("smoking").classList.replace('fa-x', 'fa-check');
+            document.getElementById("smoking").classList.replace('w3-text-red', 'w3-text-green');
+            document.getElementById("smoking").innerHTML = "Allowed";
+        }
+        if (data.parties === true) {
+            document.getElementById("partyInput").checked = true;
+
+            document.getElementById("parties").classList.replace('fa-x', 'fa-check');
+            document.getElementById("parties").classList.replace('w3-text-red', 'w3-text-green');
+            document.getElementById("parties").innerHTML = "Allowed";
+        }
+
+        if (data.AC === true) {
+            document.getElementById("acInput").checked = true;
+            document.getElementById("ac").classList.replace('fa-x', 'fa-check');
+            document.getElementById("ac").classList.replace('w3-text-red', 'w3-text-green');
+        }
+        if (data.Terrace === true) {
+            document.getElementById("terraceInput").checked = true;
+            document.getElementById("terrace").classList.replace('fa-x', 'fa-check');
+            document.getElementById("terrace").classList.replace('w3-text-red', 'w3-text-green');
+        }
+        if (data.Pool === true) {
+            document.getElementById("poolInput").checked = true;
+
+            document.getElementById("pool").classList.replace('fa-x', 'fa-check');
+            document.getElementById("pool").classList.replace('w3-text-red', 'w3-text-green');
+        }
+        if (data.Gym === true) {
+            document.getElementById("gymInput").checked = true;
+            document.getElementById("gym").classList.replace('fa-x', 'fa-check');
+            document.getElementById("gym").classList.replace('w3-text-red', 'w3-text-green');
+        }
+        if (data.Restaurant  === true) {
+            document.getElementById("restaurantInput").checked = true;
+            document.getElementById("restaurant").classList.replace('fa-x', 'fa-check');
+            document.getElementById("restaurant").classList.replace('w3-text-red', 'w3-text-green');
+        }
+        if (data.Beach === true) {
+            document.getElementById("beachInput").checked = true;
+
+            document.getElementById("beach").classList.replace('fa-x', 'fa-check');
+            document.getElementById("beach").classList.replace('w3-text-red', 'w3-text-green');
+        }
+
+        data.rooms.forEach(addRoom);
+     }
+        getData(URL)
+
+
+    var utiDiv = document.getElementById("utilities");
+
+    function addRooms(value) {
+      
+    }
+
+    setTimeout(() => {
+        const destination = { lat: parseFloat(latitude), lng: parseFloat(longtitude) };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: destination,
+        });
+        const marker = new google.maps.Marker({
+            position: destination,
+            map: map,
+        });
+        window.initMap = initMap;
+
+        fetch('https://api.npoint.io/af328b8bf4041e0a9c1b')
+            .then(response => response.json())
+            .then(json => {buf = json })
+    }, 1000);
+
+    function initMap() {
+        
+    }
+
+    function submitForm() {
+        var obj = new Object();
+        obj.name = document.getElementById("nameInput").value;
+        obj.owner = document.getElementById("ownerInput").value;
+        obj.address = document.getElementById("addressInput").value;
+        obj.email = document.getElementById("emailInput").value;
+        obj.phone = document.getElementById("phoneInput").value;
+        obj.longtitude = document.getElementById("longtitude").value;
+        obj.latitude = document.getElementById("latitude").value;
+        obj.checkout = document.getElementById("checkoutInput").value;
+        obj.checkin = document.getElementById("checkinInput").value;
+        obj.rooms = [];
+        if (document.getElementById("petInput").checked) {
+            obj.pets = true;
+        } else {
+            obj.pets = false;
+        }
+        if (document.getElementById("smokingInput").checked) {
+            obj.smoking = true;
+        } else {
+            obj.smoking = false;
+        } if (document.getElementById("partyInput").checked) {
+            obj.parties = true;
+        } else {
+            obj.parties = false;
+        }
+
+        if (document.getElementById("acInput").checked) {
+            obj.AC = true;
+        } else {
+            obj.AC = false;
+        }
+        if (document.getElementById("terraceInput").checked) {
+            obj.Terrace = true;
+        } else {
+            obj.Terrace = false;
+        }
+        if (document.getElementById("poolInput").checked) {
+            obj.Pool = true;
+        } else {
+            obj.Pool = false;
+        }
+        if (document.getElementById("gymInput").checked) {
+            obj.Gym = true;
+        } else {
+            obj.Gym = false;
+        }
+        if (document.getElementById("restaurantInput").checked) {
+            obj.Restaurant = true;
+        } else {
+            obj.Restaurant = false;
+        }
+        if (document.getElementById("beachInput").checked) {
+            obj.Beach = true;
+        } else {
+            obj.Beach = false;
+        }
+
+        var titles = document.getElementsByName('title[]');
+        var sizes = document.getElementsByName('size[]');
+        var rates = document.getElementsByName('rate[]');
+
+        for (var i = 0; i < titles.length; i++) {
+            obj['rooms'].push({ "title": titles[i].value, "size": sizes[i].value, "rate": rates[i].value });
+        }
+
+
+        fetch("https://api.npoint.io/5217ca47006bb5e8599d", {
+            method: "post",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(obj)
+        })
+            .then((response) => {
+                console.log(response);
+            });
+    }
+
+
+    function addRoom(value) {
+        if (value != null) {
+            var newTr = document.createElement("tr");
+            var titleTh = document.createElement("th");
+            var sizeTh = document.createElement("th");
+            titleTh.innerHTML = value.title;
+            sizeTh.innerHTML = value.size + "m2";
+            newTr.appendChild(titleTh);
+            newTr.appendChild(sizeTh);
+            document.getElementById("rooms").appendChild(newTr);
+
+            var newTr2 = document.createElement("tr");
+            var titleTh2 = document.createElement("th");
+            var checkTh = document.createElement("th");
+            var chooseBtn = document.createElement("input");
+            titleTh2.innerHTML = value.title;
+            chooseBtn.type = "checkbox";
+            chooseBtn.id = value.title;
+            chooseBtn.onclick = function (value) {
+                if (value.target.checked) {
+                    array.push(value.target.id);
+                } else {
+                    var des = array.indexOf(value.target.id);
+                    array.splice(des, 1);
+                }
+        
+            }
+  
+            newTr2.appendChild(titleTh2);
+            checkTh.appendChild(chooseBtn);
+            newTr2.appendChild(checkTh);
+            document.getElementById("setPrice").appendChild(newTr2);
+        }
+
+        var newDiv = document.createElement("tr");
+        var titleCol = document.createElement("input");
+        titleCol.style.margin = '10px'
+        titleCol.name = "title[]";
+        titleCol.required = true;
+
+        var sizeCol = document.createElement("input");
+        sizeCol.style.margin = '10px'
+
+        sizeCol.type = "number";
+        sizeCol.name = "size[]";
+        sizeCol.required = true;
+
+        var rateCol = document.createElement("input");
+
+        rateCol.type = "number";
+        rateCol.name = "rate[]";
+        rateCol.required = true;
+
+        var deleteBtn = document.createElement("button");
+        deleteBtn.innerHTML = "  Delete ";
+        deleteBtn.classList.add("fa", "fa-x", "w3-button", "w3-text-red", "w3-right");
+        deleteBtn.type = "button";
+        deleteBtn.onclick = function () {
+            var td = event.target.parentNode;
+            td.remove();
+        }
+
+
+        if (value != null) {
+            titleCol.value = value.title;
+            sizeCol.value = value.size;
+            rateCol.value = value.rate;
+        }
+
+        newDiv.appendChild(titleCol);
+        newDiv.appendChild(sizeCol);
+        newDiv.appendChild(rateCol);
+        newDiv.appendChild(deleteBtn);
+
+    
+        document.getElementById("roomList").appendChild(newDiv);
+    }
+    function getPrice() {
+        var inDate = new Date(document.getElementById("checkInDate").value);
+        var outDate = new Date(document.getElementById("checkOutDate").value);
+        var arr = new Array();
+        var obj = new Object();
+        for (loopTime = inDate.getTime(); loopTime < outDate.getTime(); loopTime += 86400000) {
+            var loopDay = new Date(loopTime)
+            for (let i = 0; i < rooms.length; i++) {
+                var str = rooms[i] + "+" + loopDay.toISOString().substring(0, 10);
+                arr.push(str);
+            }
+        }
+        for (let i = 0; i < rooms.length; i++) {
+            obj[rooms[i]] = 0.0;
+        }
+        for (let i = 0; i < arr.length; i++) {
+            var room = arr[i].split("+")[0];
+            if (typeof (buf[arr[i]]) !== "undefined") {
+                obj[room] = parseFloat(obj[room]) + parseFloat(buf[arr[i]]);
+            } else {
+                obj[room] = parseFloat(obj[room]) + parseFloat(standardRate[room]);
+            }
+        }
+
+        for (let i = 0; i < rooms.length; i++) {
+            var newDiv = document.createElement("tr");
+            var title = document.createElement("th");
+            var price = document.createElement("th");
+            title.innerHTML = rooms[i];
+            price.innerHTML = obj[rooms[i]] + " USD";
+            newDiv.appendChild(title);
+            newDiv.appendChild(price);
+
+            document.getElementById("booking").appendChild(newDiv);
+
+       
+        }
+    }
+
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBAowEAFC2Srk8AslXtHoq7_ohA0FBxE_M&callback=initMap" async defer>
+</script>
+</html>
+
